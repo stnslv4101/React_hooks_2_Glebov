@@ -1,0 +1,117 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f7f9fa;
+  display: flex;
+  justify-content: center;
+  padding-top: 40px;
+}
+
+.app-container {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 480px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+h1 {
+  font-size: 22px;
+  margin: 0;
+  color: #333;
+}
+
+form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+input[type="text"] {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+button {
+  padding: 10px 16px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+button:hover {
+  background: #0056b3;
+}
+
+ul {
+  list-style: none; /* Убирает те самые съехавшие точки */
+  padding: 0;
+  margin: 0;
+}
+
+li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 8px;
+  border-bottom: 1px solid #eee;
+}
+
+li span {
+  flex: 1;
+  font-size: 15px;
+}
+
+li.done span {
+  text-decoration: line-through;
+  color: #aaa;
+}
+
+li button {
+  padding: 4px 8px;
+  background: #ff4d4f;
+}
+
+li button:hover {
+  background: #d9363e;
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.controls button {
+  flex: 1;
+  background: #6c757d;
+}
+
+.controls .btn-danger {
+  background: #dc3545;
+}
+
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
