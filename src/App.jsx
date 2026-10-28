@@ -1,14 +1,12 @@
-import { useReducer, useEffect, useCallback, useTransition } from 'react';
+import { useReducer, useEffect, useCallback, useTransition, useState, useMemo } from 'react';
 import { tasksReducer } from './tasksReducer.js';
 import { AddTaskForm } from './components/AddTaskForm.jsx';
 import { TaskList } from './components/TaskList.jsx';
 import { ThemeToggle } from './components/ThemeToggle.jsx';
 import { useTheme } from './ThemeContext.jsx';
 
-// Начальное состояние — пустой массив задач
 const initialTasks = [];
 
-// Симуляция получения данных с сервера (Задание 3 - useEffect)
 const mockFetchTasks = () => {
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -25,15 +23,20 @@ export default function App() {
   const [tasks, dispatch] = useReducer(tasksReducer, initialTasks);
   const { theme } = useTheme();
   const [isPending, startTransition] = useTransition();
+  
+  // Состояние для фильтрации: 'all', 'active' или 'completed'
+  const [filter, setFilter] = useState('all');
 
-  // Загрузка первоначальных задач при старте (useEffect)
+  useEffect(() => {
+    document.body.className = theme;
+  }, [theme]);
+
   useEffect(() => {
     mockFetchTasks().then((loadedTasks) => {
       dispatch({ type: 'addMany', tasks: loadedTasks });
     });
   }, []);
 
-  // Оптимизация колбэков с помощью useCallback (Шаг 5)
   const handleAddTask = useCallback((text) => {
     dispatch({
       type: 'add',
@@ -49,7 +52,6 @@ export default function App() {
     dispatch({ type: 'remove', id });
   }, []);
 
-  // Очистка выполненных с использованием useTransition (React 19)
   const handleClearDone = () => {
     startTransition(() => {
       dispatch({ type: 'clearDone' });
@@ -60,22 +62,64 @@ export default function App() {
     dispatch({ type: 'clearAll' });
   };
 
+  // Оптимизированный подсчет статистики
+  const stats = useMemo(() => {
+    const total = tasks.length;
+    const completed = tasks.filter(t => t.done).length;
+    return { total, completed };
+  }, [tasks]);
+
+  // Фильтрация списка перед отрисовкой
+  const filteredTasks = useMemo(() => {
+    if (filter === 'active') return tasks.filter(t => !t.done);
+    if (filter === 'completed') return tasks.filter(t => t.done);
+    return tasks;
+  }, [tasks, filter]);
+
   return (
-    <div className={`app-container ${theme}`}>
+    <div className="app-container">
       <header>
-        <h1>Список задач (React Hooks)</h1>
+        <h1>Менеджер задач</h1>
         <ThemeToggle />
       </header>
 
       <main>
         <AddTaskForm onAdd={handleAddTask} />
         
+        {/* Кнопки переключения фильтров */}
+        <div className="filter-buttons">
+          <button 
+            className={filter === 'all' ? 'active' : ''} 
+            onClick={() => setFilter('all')}
+          >
+            Все
+          </button>
+          <button 
+            className={filter === 'active' ? 'active' : ''} 
+            onClick={() => setFilter('active')}
+          >
+            Активные
+          </button>
+          <button 
+            className={filter === 'completed' ? 'active' : ''} 
+            onClick={() => setFilter('completed')}
+          >
+            Готовые
+          </button>
+        </div>
+
+        {/* Строка статистики */}
+        <div className="stats-row">
+          Всего: {stats.total}, выполнено: {stats.completed}
+        </div>
+        
         {isPending && <p className="loading">Очистка выполненных задач...</p>}
         
         <TaskList 
-          tasks={tasks} 
+          tasks={filteredTasks} 
           onToggle={handleToggleTask} 
-          onRemove={handleRemoveTask} 
+          onRemove={handleRemoveTask}
+
         />
 
         {tasks.length > 0 && (
